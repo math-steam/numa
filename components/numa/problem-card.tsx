@@ -36,6 +36,22 @@ export function ProblemCard({ problem, index }: { problem: Problem; index: numbe
   const requestHint = () => {
     sendMessage(
       { text: hints.length === 0 ? '請給我第一個提示。' : '我還是卡住了，請給我下一個提示。' },
+      { 
+        body: { 
+          mode: 'hint', 
+          problem: problem.statement || `題目單元：${problem.topic}`,
+          // 👈 帶入 JSON 資料庫的完整資訊
+          imagePath: (problem as any).image_path,
+          answer: (problem as any).answer,
+          topic: problem.topic,
+          year: (problem as any).year
+        } 
+      },
+    )
+  }
+  const requestHint = () => {
+    sendMessage(
+      { text: hints.length === 0 ? '請給我第一個提示。' : '我還是卡住了，請給我下一個提示。' },
       { body: { mode: 'hint', problem: problem.statement } },
     )
   }
@@ -43,14 +59,48 @@ export function ProblemCard({ problem, index }: { problem: Problem; index: numbe
   return (
     <article className="flex h-full flex-col gap-4 rounded-xl border bg-card p-5 text-card-foreground">
       <header className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="font-mono text-xs text-muted-foreground">{`Q${String(index).padStart(2, '0')}`}</span>
           <Badge variant="secondary">{problem.topic}</Badge>
+
+          {/* 1. 若有年份與題號，優先顯示 */}
+          {('year' in problem && (problem as any).year) && (
+            <span className="text-xs font-medium text-muted-foreground">
+              {(problem as any).year} 年 第 {(problem as any).q_no} 題
+            </span>
+          )}
+
+          {/* 2. 只有當 accuracy 存在且不為 NULL / 空字串時，才顯示答對率 */}
+          {('accuracy' in problem && (problem as any).accuracy) && (
+            <span className="rounded bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 border border-amber-200">
+              答對率 {(problem as any).accuracy}%
+            </span>
+          )}
         </div>
-        <DifficultyMeter level={problem.difficulty} />
+
+        {/* 難易度指示器：若無 difficulty 資料（如匯入的試題），可改為預設標籤 */}
+        {problem.difficulty ? (
+          <DifficultyMeter level={problem.difficulty} />
+        ) : (
+          <span className="text-xs font-medium text-amber-600 bg-amber-50/50 px-2 py-0.5 rounded border border-amber-100">
+            歷屆真題
+          </span>
+        )}
       </header>
 
       <MathText className="text-[15px]">{problem.statement}</MathText>
+      {/* 👈 優先判斷是否有圖片路徑 (cap/gsat 題目截圖) */}
+      {('image_path' in problem && problem.image_path) ? (
+        <div className="relative my-1 overflow-hidden rounded-lg border bg-white p-2">
+          <img
+            src={`/${(problem as any).image_path}`}
+            alt={`${problem.topic} 第 ${index} 題`}
+            className="mx-auto max-h-56 w-full object-contain"
+          />
+        </div>
+      ) : problem.statement ? (
+        <MathText className="text-[15px]">{problem.statement}</MathText>
+      ) : null}
 
       {hints.length > 0 && (
         <ol className="flex flex-col gap-2" aria-label="AI 提示">

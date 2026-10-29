@@ -21,6 +21,22 @@ const transport = new DefaultChatTransport({ api: '/api/tutor' })
 
 type TutorMode = 'socratic' | 'solve'
 
+// 擴充 Prop 介面，讓 problem-card.tsx 點擊時能直接傳進特定題目
+interface AiTutorProps {
+  initialProblemId?: string; // 外部帶入的題目 ID
+  customQuestions?: any[];   // 從 cap_questions.json 傳進來的列表
+}
+
+export function AiTutor({ initialProblemId, customQuestions }: AiTutorProps) {
+  // 如果有傳入 customQuestions，就優先使用；否則使用原本預設的 PRACTICE
+  const problemList = customQuestions && customQuestions.length > 0 
+    ? customQuestions 
+    : PRACTICE;
+
+  const [selectedId, setSelectedId] = useState<string>(
+    initialProblemId || problemList[0]?.id || PRACTICE[0].id
+  );
+  
 function toProblemText(input: string) {
   const trimmed = input.trim()
   if (!trimmed) return ''
@@ -141,8 +157,16 @@ export function AiTutor() {
 
           <div className="flex flex-col gap-2">
             <p className="text-xs font-semibold text-muted-foreground">題目預覽</p>
-            <div className="min-h-20 rounded-lg bg-muted p-4">
-              {problemText ? (
+            <div className="min-h-20 rounded-lg bg-muted p-4 flex items-center justify-center">
+              {selected && 'image_path' in selected && selected.image_path ? (
+                <div className="relative w-full overflow-hidden rounded-md border bg-white p-2">
+                  <img
+                    src={`/${(selected as any).image_path}`}
+                    alt={`${selected.topic || '題目'} 截圖`}
+                    className="mx-auto max-h-48 object-contain"
+                  />
+                </div>
+              ) : problemText ? (
                 <MathText className="text-[15px]">{problemText}</MathText>
               ) : (
                 <p className="text-sm text-muted-foreground">輸入題目後會在這裡即時預覽。</p>
