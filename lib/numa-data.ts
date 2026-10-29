@@ -84,7 +84,7 @@ export const EXAMS: ExamMeta[] = [
     name: '分科測驗',
     short: '分科',
     english: 'AST',
-    subject: '數學甲',
+    subject: '數學甲/數學乙',
     nextDate: '116 年 7 月 10 - 11 日',
     description: '分發入學主要依據，各科以 60 級分呈現。',
   },
