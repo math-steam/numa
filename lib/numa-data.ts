@@ -67,7 +67,7 @@ export const EXAMS: ExamMeta[] = [
     short: '會考',
     english: 'CAP / JHET',
     subject: '數學（含非選擇題）',
-    nextDate: '116 年 5 月中旬（預定）',
+    nextDate: '116 年 5 月 15 日 - 16 日',
     description: '國三升學關鍵，數學以精熟、基礎、待加強三等級呈現。',
   },
   {
@@ -76,7 +76,7 @@ export const EXAMS: ExamMeta[] = [
     short: '學測',
     english: 'GSAT',
     subject: '數學 A／數學 B',
-    nextDate: '116 學年度 · 2027 年 1 月中旬（預定）',
+    nextDate: '116 年 1 月 22 日 - 24 日',
     description: '繁星推薦與個人申請的門票，成績以 15 級分計。',
   },
   {
@@ -85,7 +85,7 @@ export const EXAMS: ExamMeta[] = [
     short: '分科',
     english: 'AST',
     subject: '數學甲',
-    nextDate: '116 學年度 · 2027 年 7 月中旬（預定）',
+    nextDate: '116 年 7 月 10 日 - 11 日',
     description: '分發入學主要依據，各科以 60 級分呈現。',
   },
 ]
