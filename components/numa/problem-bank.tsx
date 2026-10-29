@@ -1,9 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { DIFFICULTY_LABEL, PROBLEMS, TOPICS_BY_EXAM, type Difficulty, type ExamId } from '@/lib/numa-data'
+import { DIFFICULTY_LABEL, TOPICS_BY_EXAM, type Difficulty, type ExamId } from '@/lib/numa-data'
 import { cn } from '@/lib/utils'
 import { ProblemCard } from './problem-card'
+
+// 1. 引入您剛才建立的 JSON 題庫
+import capQuestions from '@/lib/cap_questions.json'
+import gsatQuestions from '@/lib/gsat_questions.json'
 
 const ALL = 'all'
 
@@ -27,9 +31,15 @@ export function ProblemBank({ exam }: { exam: ExamId }) {
   const [topic, setTopic] = useState<string>(ALL)
   const [difficulty, setDifficulty] = useState<Difficulty | typeof ALL>(ALL)
 
-  const problems = PROBLEMS.filter(
-    (p) => p.exam === exam && (topic === ALL || p.topic === topic) && (difficulty === ALL || p.difficulty === difficulty),
-  )
+  // 2. 根據目前選取的 exam 決定使用哪個題庫來源
+  const rawQuestions = exam === 'cap' ? capQuestions : gsatQuestions
+
+  // 3. 進行過濾（若 JSON 內沒有 difficulty 欄位，會自動忽略難度篩選避免報錯）
+  const problems = rawQuestions.filter((p: any) => {
+    const matchTopic = topic === ALL || p.topic === topic
+    const matchDifficulty = difficulty === ALL || p.difficulty === difficulty
+    return matchTopic && matchDifficulty
+  })
 
   return (
     <div className="flex flex-col gap-5">
@@ -39,7 +49,7 @@ export function ProblemBank({ exam }: { exam: ExamId }) {
           <FilterChip active={topic === ALL} onClick={() => setTopic(ALL)}>
             全部
           </FilterChip>
-          {TOPICS_BY_EXAM[exam].map((item) => (
+          {TOPICS_BY_EXAM[exam]?.map((item) => (
             <FilterChip key={item} active={topic === item} onClick={() => setTopic(item)}>
               {item}
             </FilterChip>
@@ -64,7 +74,7 @@ export function ProblemBank({ exam }: { exam: ExamId }) {
 
       {problems.length > 0 ? (
         <ul className="grid gap-4 md:grid-cols-2">
-          {problems.map((problem, index) => (
+          {problems.map((problem: any, index: number) => (
             <li key={problem.id}>
               <ProblemCard problem={problem} index={index + 1} />
             </li>
