@@ -31,13 +31,23 @@ export function ProblemBank({ exam }: { exam: ExamId }) {
   const [topic, setTopic] = useState<string>(ALL)
   const [difficulty, setDifficulty] = useState<Difficulty | typeof ALL>(ALL)
 
-  // 2. 根據目前選取的 exam 決定使用哪個題庫來源
+  // 1. 根據目前選取的 exam 決定使用哪個題庫來源
   const rawQuestions = exam === 'cap' ? capQuestions : gsatQuestions
 
-  // 3. 進行過濾（若 JSON 內沒有 difficulty 欄位，會自動忽略難度篩選避免報錯）
-  const problems = rawQuestions.filter((p: any) => {
-    const matchTopic = topic === ALL || p.topic === topic
-    const matchDifficulty = difficulty === ALL || p.difficulty === difficulty
+  // 2. 具有強大容錯能力的過濾邏輯
+  const problems = (rawQuestions || []).filter((p: any) => {
+    // 單元比對：選全部，或 topic 名稱相符（自動去除前後空白）
+    const matchTopic =
+      topic === ALL ||
+      (p.topic && String(p.topic).trim() === String(topic).trim())
+
+    // 難度比對：選全部、或是該題本身沒有設定難度（預設放行）、或難度數值相符
+    const matchDifficulty =
+      difficulty === ALL ||
+      p.difficulty === undefined ||
+      p.difficulty === null ||
+      Number(p.difficulty) === Number(difficulty)
+
     return matchTopic && matchDifficulty
   })
 
