@@ -21,30 +21,27 @@ const transport = new DefaultChatTransport({ api: '/api/tutor' })
 
 type TutorMode = 'socratic' | 'solve'
 
-// 擴充 Prop 介面，讓 problem-card.tsx 點擊時能直接傳進特定題目
+// 擴充 Prop 介面，讓外部點擊時能直接帶入特定題目與題庫
 interface AiTutorProps {
-  initialProblemId?: string; // 外部帶入的題目 ID
-  customQuestions?: any[];   // 從 cap_questions.json 傳進來的列表
+  initialProblemId?: string
+  customQuestions?: any[]
 }
 
-export function AiTutor({ initialProblemId, customQuestions }: AiTutorProps) {
-  // 如果有傳入 customQuestions，就優先使用；否則使用原本預設的 PRACTICE
-  const problemList = customQuestions && customQuestions.length > 0 
-    ? customQuestions 
-    : PRACTICE;
-
-  const [selectedId, setSelectedId] = useState<string>(
-    initialProblemId || problemList[0]?.id || PRACTICE[0].id
-  );
-  
 function toProblemText(input: string) {
   const trimmed = input.trim()
   if (!trimmed) return ''
   return trimmed.includes('$') || /[\u4e00-\u9fff]/.test(trimmed) ? trimmed : `$$${trimmed}$$`
 }
 
-export function AiTutor() {
-  const [selectedId, setSelectedId] = useState<string>(PRACTICE[0].id)
+export function AiTutor({ initialProblemId, customQuestions }: AiTutorProps) {
+  // 如果有傳入 customQuestions，就優先使用；否則使用原本預設的 PRACTICE
+  const problemList = customQuestions && customQuestions.length > 0 
+    ? customQuestions 
+    : PRACTICE
+
+  const [selectedId, setSelectedId] = useState<string>(
+    initialProblemId || problemList[0]?.id || PRACTICE[0].id
+  )
   const [customInput, setCustomInput] = useState(String.raw`\int_0^{\pi} \sin x \, dx`)
   const [reply, setReply] = useState('')
   const [mode, setMode] = useState<TutorMode>('socratic')
@@ -52,8 +49,12 @@ export function AiTutor() {
 
   const { messages, sendMessage, setMessages, status, stop, error } = useChat({ id: 'numa-tutor', transport })
 
-  const selected = PRACTICE.find((p) => p.id === selectedId)
-  const problemText = selected ? selected.statement : toProblemText(customInput)
+  // 從列表或自定義中尋找目前選中的題目
+  const selected = selectedId === CUSTOM 
+    ? null 
+    : problemList.find((p: any) => p.id === selectedId) || problemList[0]
+
+  const problemText = selected ? (selected.statement || '') : toProblemText(customInput)
   const busy = status === 'submitted' || status === 'streaming'
 
   const resetConversation = () => {
@@ -102,8 +103,8 @@ export function AiTutor() {
         <div className="flex flex-col gap-4 rounded-xl border bg-card p-5">
           <fieldset className="flex flex-col gap-3">
             <legend className="mb-3 text-sm font-semibold">選擇題目</legend>
-            <div className="grid grid-cols-2 gap-2">
-              {PRACTICE.map((problem) => {
+            <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto pr-1">
+              {problemList.map((problem: any) => {
                 const exam = EXAMS.find((e) => e.id === problem.exam)
                 const active = problem.id === selectedId
                 return (
@@ -118,9 +119,9 @@ export function AiTutor() {
                     )}
                   >
                     <span className={cn('text-[10px] font-medium', active ? 'text-primary-foreground/70' : 'text-muted-foreground')}>
-                      {exam?.short}
+                      {exam?.short || problem.exam || '題庫'}
                     </span>
-                    <span className="text-sm font-semibold">{problem.topic}</span>
+                    <span className="text-sm font-semibold truncate w-full">{problem.topic || '數學題'}</span>
                   </button>
                 )
               })}
@@ -161,7 +162,7 @@ export function AiTutor() {
               {selected && 'image_path' in selected && selected.image_path ? (
                 <div className="relative w-full overflow-hidden rounded-md border bg-white p-2">
                   <img
-                    src={`/${(selected as any).image_path}`}
+                    src={`/${selected.image_path}`}
                     alt={`${selected.topic || '題目'} 截圖`}
                     className="mx-auto max-h-48 object-contain"
                   />
@@ -206,7 +207,7 @@ export function AiTutor() {
                 <MessagesSquare className="size-3.5" aria-hidden="true" />
                 對話
               </TabsTrigger>
-              <TabsTrigger value="steps" disabled={!selected} className="gap-1 px-3 text-xs">
+              <TabsTrigger value="steps" disabled={!selected || !('solution_steps' in selected)} className="gap-1 px-3 text-xs">
                 <ListOrdered className="size-3.5" aria-hidden="true" />
                 標準詳解
               </TabsTrigger>

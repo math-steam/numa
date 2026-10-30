@@ -49,12 +49,6 @@ export function ProblemCard({ problem, index }: { problem: Problem; index: numbe
       },
     )
   }
-  const requestHint = () => {
-    sendMessage(
-      { text: hints.length === 0 ? '請給我第一個提示。' : '我還是卡住了，請給我下一個提示。' },
-      { body: { mode: 'hint', problem: problem.statement } },
-    )
-  }
 
   return (
     <article className="flex h-full flex-col gap-4 rounded-xl border bg-card p-5 text-card-foreground">

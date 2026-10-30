@@ -1,5 +1,5 @@
 import katex from 'katex'
-import { Fragment } from 'react'
+import { Fragment, type ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
 const MATH_PATTERN = /(\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\)|\$[^$\n]+?\$)/g
@@ -27,8 +27,10 @@ function renderText(text: string, keyPrefix: string) {
   })
 }
 
-export function MathText({ children, className }: { children: string; className?: string }) {
-  const segments = children.split(MATH_PATTERN)
+export function MathText({ children, className }: { children?: ReactNode; className?: string }) {
+  // 安全防禦：確保任何情況下都能轉為字串進行 split，不會再發生 undefined 錯誤
+  const contentString = typeof children === 'string' ? children : String(children || '')
+  const segments = contentString.split(MATH_PATTERN)
 
   return (
     <div className={cn('leading-relaxed whitespace-pre-line', className)}>
