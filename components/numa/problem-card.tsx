@@ -67,12 +67,12 @@ export function ProblemCard({ problem, index }: { problem: Problem; index: numbe
           {/* 2. 只有當 accuracy 存在且不為 NULL / 空字串時，才顯示答對率 */}
           {('accuracy' in problem && (problem as any).accuracy) && (
             <span className="rounded bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 border border-amber-200">
-              答對率 {(problem as any).accuracy}%
+              答對率 {(problem as any).accuracy}
             </span>
           )}
         </div>
 
-        {/* 難易度指示器：若無 difficulty 資料，改為高對比的歷屆真題標籤 */}
+        {/* 難易度指示器：若無 difficulty 資料，改為高對比的歷屆試題標籤 */}
         {problem.difficulty ? (
           <DifficultyMeter level={problem.difficulty} />
         ) : (
