@@ -57,10 +57,10 @@ export function ProblemCard({ problem, index }: { problem: Problem; index: numbe
           <span className="font-mono text-xs text-muted-foreground">{`Q${String(index).padStart(2, '0')}`}</span>
           <Badge variant="secondary">{problem.topic}</Badge>
 
-          {/* 1. 若有年份與題號，優先顯示 */}
+          {/* 顯示：年份 + 題型 + 第幾題 */}
           {('year' in problem && (problem as any).year) && (
             <span className="text-xs font-medium text-muted-foreground">
-              {(problem as any).year} 年 第 {(problem as any).q_no} 題
+              {(problem as any).year} 年 {('type' in problem && (problem as any).type) ? `${(problem as any).type} ` : ''}第 {(problem as any).q_no} 題
             </span>
           )}
 
