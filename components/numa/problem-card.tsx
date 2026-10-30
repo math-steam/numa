@@ -72,14 +72,15 @@ export function ProblemCard({ problem, index }: { problem: Problem; index: numbe
           )}
         </div>
 
-        {/* 難易度指示器：若無 difficulty 資料（如匯入的試題），可改為預設標籤 */}
+        {/* 難易度指示器：若無 difficulty 資料，改為高對比的歷屆真題標籤 */}
         {problem.difficulty ? (
           <DifficultyMeter level={problem.difficulty} />
         ) : (
-          <span className="text-xs font-medium text-amber-600 bg-amber-50/50 px-2 py-0.5 rounded border border-amber-100">
-            歷屆真題
+          <span className="inline-flex items-center rounded-md bg-zinc-900/90 px-2.5 py-1 text-[11px] font-semibold text-amber-400 border border-amber-500/30 shadow-sm">
+            歷屆試題
           </span>
         )}
+        
       </header>
 
       <MathText className="text-[15px]">{problem.statement}</MathText>
