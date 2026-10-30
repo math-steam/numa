@@ -32,7 +32,7 @@ export function ProblemBank({ exam }: { exam: ExamId }) {
   const [difficulty, setDifficulty] = useState<Difficulty | typeof ALL>(ALL)
 
   // 1. 根據目前選取的 exam 決定使用哪個題庫來源
-  const rawQuestions = exam === 'cap' ? capQuestions : gsatQuestions
+  const rawQuestions = (exam === 'cap' ? capQuestions : gsatQuestions) as any[]
 
   // 2. 具有強大容錯能力的過濾邏輯
   const problems = (rawQuestions || []).filter((p: any) => {
