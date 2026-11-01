@@ -43,9 +43,9 @@ export function ProblemBank({ exam }: { exam: ExamId }) {
     return Array.from(new Set(list))
   }, [rawQuestions])
 
-  // 3. 過濾邏輯：排除沒有 difficulty 的早期題目，並精準比對單元、題型與難度
+  // 3. 過濾邏輯：嚴格排除沒有 difficulty 的題目，並精準比對單元、題型與難度
   const problems = (rawQuestions || []).filter((p: any) => {
-    // 檢查是否有設定 difficulty（若無、空白或 null 則直接排除）
+    // 檢查是否有設定 difficulty（若無、空白、null 或 undefined 則直接排除）
     const hasDifficulty = p.difficulty !== undefined && p.difficulty !== null && p.difficulty !== ''
     if (!hasDifficulty) return false
 
@@ -59,7 +59,7 @@ export function ProblemBank({ exam }: { exam: ExamId }) {
       type === ALL ||
       (p.type && String(p.type).trim() === String(type).trim())
 
-    // 難度比對 (精準比對 1, 2, 3)
+    // 難度嚴格比對 (確保數字 1, 2, 3 與按鈕完全一致)
     const matchDifficulty =
       difficulty === ALL || Number(p.difficulty) === Number(difficulty)
 
