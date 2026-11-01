@@ -35,7 +35,7 @@ export function ProblemBank({ exam }: { exam: ExamId }) {
   // 1. 根據選取的 exam 決定使用哪個題庫來源
   const rawQuestions = (exam === 'cap' ? capQuestions : gsatQuestions) as any[]
 
-  // 2. 動態從題庫自動提取所有不重複的「單元 (topic)」，解決網頁跟資料庫單元不一致的問題
+  // 2. 動態從題庫自動提取所有不重複的「單元 (topic)」
   const dynamicTopics = useMemo(() => {
     const list = rawQuestions
       .map((q) => q.topic && String(q.topic).trim())
@@ -43,8 +43,12 @@ export function ProblemBank({ exam }: { exam: ExamId }) {
     return Array.from(new Set(list))
   }, [rawQuestions])
 
-  // 3. 包含單元、題型與難度 (1, 2, 3) 的過濾邏輯
+  // 3. 過濾邏輯：排除沒有 difficulty 的早期題目，並精準比對單元、題型與難度
   const problems = (rawQuestions || []).filter((p: any) => {
+    // 檢查是否有設定 difficulty（若無、空白或 null 則直接排除）
+    const hasDifficulty = p.difficulty !== undefined && p.difficulty !== null && p.difficulty !== ''
+    if (!hasDifficulty) return false
+
     // 單元比對
     const matchTopic =
       topic === ALL ||
@@ -57,10 +61,7 @@ export function ProblemBank({ exam }: { exam: ExamId }) {
 
     // 難度比對 (精準比對 1, 2, 3)
     const matchDifficulty =
-      difficulty === ALL ||
-      p.difficulty === undefined ||
-      p.difficulty === null ||
-      Number(p.difficulty) === Number(difficulty)
+      difficulty === ALL || Number(p.difficulty) === Number(difficulty)
 
     return matchTopic && matchType && matchDifficulty
   })
