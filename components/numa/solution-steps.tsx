@@ -1,6 +1,6 @@
 'use client'
 
-import { BookOpenCheck, Check, ChevronDown, RotateCcw } from 'lucide-react'
+import { Check, ChevronDown, RotateCcw } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import type { Problem } from '@/lib/numa-data'
@@ -8,11 +8,35 @@ import { cn } from '@/lib/utils'
 import { MathText } from './math-text'
 
 export function SolutionSteps({ problem }: { problem: Problem }) {
-  const steps = (problem as any).steps || []
+  const rawSolution = (problem as any).solution
+  const rawSteps = (problem as any).steps
+
+  // 狀況 A：如果資料庫裡有字串形式的 solution（例如 115 年題庫的格式）
+  if (rawSolution && typeof rawSolution === 'string') {
+    return (
+      <div className="flex flex-col gap-4 py-2">
+        <div className="rounded-lg border bg-card p-4 flex flex-col gap-2">
+          <span className="text-xs font-semibold text-muted-foreground">詳細解析</span>
+          <MathText className="text-sm whitespace-pre-line leading-relaxed">{rawSolution}</MathText>
+        </div>
+        <div className="flex items-start gap-3 rounded-lg border border-brand/50 bg-brand/10 p-4">
+          <Check className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden="true" />
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold">正確答案</span>
+            <MathText className="font-bold">{problem.answer}</MathText>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // 狀況 B：如果資料庫裡有結構化的 steps 陣列
+  const steps = Array.isArray(rawSteps) ? rawSteps : []
   const total = steps.length
+
   const [revealed, setRevealed] = useState(1)
 
-  // 防護：如果這題沒有 steps 詳解（例如早期歷屆試題），提供漂亮的 Fallback 顯示
+  // 狀況 C：如果兩者都沒有（既無 solution 也無 steps）
   if (total === 0) {
     return (
       <div className="flex flex-col gap-4 py-4">
@@ -21,7 +45,7 @@ export function SolutionSteps({ problem }: { problem: Problem }) {
           <MathText className="text-lg font-bold">{(problem as any).answer || '詳解整理中'}</MathText>
         </div>
         <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground flex flex-col items-center gap-2">
-          <p>此歷屆試題目前尚未編寫分步詳解。</p>
+          <p>此題目前尚未編寫詳細解析。</p>
           <p className="text-xs">您可以點擊題目卡片上的「AI 提示」，讓 AI 一步步帶您思考解題關鍵！</p>
         </div>
       </div>
