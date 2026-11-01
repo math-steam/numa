@@ -1,6 +1,6 @@
 'use client'
 
-import { Check, ChevronDown, RotateCcw } from 'lucide-react'
+import { BookOpenCheck, Check, ChevronDown, RotateCcw } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import type { Problem } from '@/lib/numa-data'
@@ -8,8 +8,26 @@ import { cn } from '@/lib/utils'
 import { MathText } from './math-text'
 
 export function SolutionSteps({ problem }: { problem: Problem }) {
+  const steps = (problem as any).steps || []
+  const total = steps.length
   const [revealed, setRevealed] = useState(1)
-  const total = problem.steps.length
+
+  // 防護：如果這題沒有 steps 詳解（例如早期歷屆試題），提供漂亮的 Fallback 顯示
+  if (total === 0) {
+    return (
+      <div className="flex flex-col gap-4 py-4">
+        <div className="rounded-lg border bg-card p-4 flex flex-col gap-2">
+          <span className="text-xs font-semibold text-muted-foreground">正確答案</span>
+          <MathText className="text-lg font-bold">{(problem as any).answer || '詳解整理中'}</MathText>
+        </div>
+        <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground flex flex-col items-center gap-2">
+          <p>此歷屆試題目前尚未編寫分步詳解。</p>
+          <p className="text-xs">您可以點擊題目卡片上的「AI 提示」，讓 AI 一步步帶您思考解題關鍵！</p>
+        </div>
+      </div>
+    )
+  }
+
   const done = revealed > total
 
   return (
@@ -32,9 +50,9 @@ export function SolutionSteps({ problem }: { problem: Problem }) {
       </div>
 
       <ol className="flex flex-col gap-3">
-        {problem.steps.slice(0, revealed).map((step, index) => (
+        {steps.slice(0, revealed).map((step: any, index: number) => (
           <li
-            key={step.title}
+            key={step.title || index}
             className="flex gap-3 animate-in fade-in-0 slide-in-from-bottom-2 duration-300"
           >
             <span
