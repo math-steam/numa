@@ -15,15 +15,17 @@ export function SolutionSteps({ problem }: { problem: Problem }) {
   if (rawSolution && typeof rawSolution === 'string') {
     return (
       <div className="flex flex-col gap-4 py-2">
-        <div className="rounded-lg border bg-card p-4 flex flex-col gap-2">
+        <div className="rounded-lg border bg-card p-4 flex flex-col gap-3">
           <span className="text-xs font-semibold text-muted-foreground">詳細解析</span>
-          <MathText className="text-sm whitespace-pre-line leading-relaxed">{rawSolution}</MathText>
+          <div className="text-sm whitespace-pre-line leading-relaxed text-card-foreground">
+            <MathText>{rawSolution}</MathText>
+          </div>
         </div>
         <div className="flex items-start gap-3 rounded-lg border border-brand/50 bg-brand/10 p-4">
           <Check className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden="true" />
           <div className="flex flex-col gap-1">
             <span className="text-xs font-semibold">正確答案</span>
-            <MathText className="font-bold">{problem.answer}</MathText>
+            <span className="font-bold text-card-foreground">{problem.answer}</span>
           </div>
         </div>
       </div>
@@ -42,7 +44,7 @@ export function SolutionSteps({ problem }: { problem: Problem }) {
       <div className="flex flex-col gap-4 py-4">
         <div className="rounded-lg border bg-card p-4 flex flex-col gap-2">
           <span className="text-xs font-semibold text-muted-foreground">正確答案</span>
-          <MathText className="text-lg font-bold">{(problem as any).answer || '詳解整理中'}</MathText>
+          <span className="text-lg font-bold text-card-foreground">{problem.answer || '詳解整理中'}</span>
         </div>
         <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground flex flex-col items-center gap-2">
           <p>此題目前尚未編寫詳細解析。</p>
