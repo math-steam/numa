@@ -11,20 +11,21 @@ export function SolutionSteps({ problem }: { problem: Problem }) {
   const rawSolution = (problem as any).solution
   const rawSteps = (problem as any).steps
 
-  // 狀況 A：如果資料庫裡有字串形式的 solution（例如 115 年題庫的格式）
+  // 狀況 A：如果資料庫裡有字串形式的 solution
   if (rawSolution && typeof rawSolution === 'string') {
     return (
-      <div className="flex flex-col gap-4 py-2">
-        <div className="rounded-lg border bg-card p-4 flex flex-col gap-3">
+      <div className="flex flex-col gap-3 py-2">
+        <div className="rounded-lg border bg-card p-4 flex flex-col gap-2">
           <span className="text-xs font-semibold text-muted-foreground">詳細解析</span>
-          <div className="text-sm whitespace-pre-line leading-relaxed text-card-foreground">
+          {/* 改用 flex flex-col 搭配較小的間距，避免多行數學式行距過大 */}
+          <div className="flex flex-col gap-1.5 text-sm text-card-foreground">
             <MathText>{rawSolution}</MathText>
           </div>
         </div>
-        <div className="flex items-start gap-3 rounded-lg border border-brand/50 bg-brand/10 p-4">
-          <Check className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden="true" />
-          <div className="flex flex-col gap-1">
-            <span className="text-xs font-semibold">正確答案</span>
+        <div className="flex items-center gap-3 rounded-lg border border-brand/50 bg-brand/10 p-3.5">
+          <Check className="size-4 shrink-0 text-brand" aria-hidden="true" />
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold">正確答案：</span>
             <span className="font-bold text-card-foreground">{problem.answer}</span>
           </div>
         </div>
@@ -38,7 +39,7 @@ export function SolutionSteps({ problem }: { problem: Problem }) {
 
   const [revealed, setRevealed] = useState(1)
 
-  // 狀況 C：如果兩者都沒有（既無 solution 也無 steps）
+  // 狀況 C：如果兩者都沒有
   if (total === 0) {
     return (
       <div className="flex flex-col gap-4 py-4">
@@ -99,10 +100,10 @@ export function SolutionSteps({ problem }: { problem: Problem }) {
       </ol>
 
       {done && (
-        <div className="flex items-start gap-3 rounded-lg border border-brand/50 bg-brand/10 p-4 animate-in fade-in-0">
-          <Check className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden="true" />
-          <div className="flex flex-col gap-1">
-            <span className="text-xs font-semibold">答案</span>
+        <div className="flex items-center gap-3 rounded-lg border border-brand/50 bg-brand/10 p-3.5 animate-in fade-in-0">
+          <Check className="size-4 shrink-0 text-brand" aria-hidden="true" />
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold">答案：</span>
             <MathText className="font-semibold">{problem.answer}</MathText>
           </div>
         </div>
